@@ -18,6 +18,7 @@ from covid19gng.constants import CONFIRMED
 from covid19gng.constants import DEATHS
 from covid19gng.constants import RECOVERED
 from covid19gng.generators import LowestSinceGenerator
+from covid19gng.generators import RecoveryMilestoneGenerator
 from covid19gng.utils import filter_df
 from covid19gng.utils import input_and_validate
 
@@ -68,7 +69,8 @@ class AppRunner:
 
             generators.extend([
                 LowestSinceGenerator(confirmed_df, "confirmed cases"),
-                LowestSinceGenerator(deaths_df, "deaths")
+                LowestSinceGenerator(deaths_df, "deaths"),
+                RecoveryMilestoneGenerator(recoveries_df)
             ])
 
             count = 0

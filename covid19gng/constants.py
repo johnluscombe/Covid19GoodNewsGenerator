@@ -1,3 +1,10 @@
+"""
+Constants
+=========
+
+Common constants throughout the app.
+"""
+
 DATE_FORMAT = "%m/%d/%y"
 
 # First day data was collected

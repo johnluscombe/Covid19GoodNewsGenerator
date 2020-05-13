@@ -1,17 +1,22 @@
-from covid19gng.constants import EARLIEST
-from covid19gng.constants import COUNTRY
-from covid19gng.constants import STATE
-from covid19gng.constants import PROVINCE
-from covid19gng.constants import US
-from covid19gng.generators import GeneratorBase
-from covid19gng.utils import filter_df
-from covid19gng.utils import unique
+"""
+Lowest-Since Generator
+======================
+
+Generator for generating when a location has had the lowest amount of
+recoveries or deaths since a particular date.
+"""
+
+from covid19gng.generators import CountryAndStateGenerator
 
 # Minimum number of days the previous date must be in order to get reported
 DAYS_THRESHOLD = 30
 
 
-class LowestSinceGenerator(GeneratorBase):
+class LowestSinceGenerator(CountryAndStateGenerator):
+    """
+    LowestSinceGenerator class. See module documentation for more information.
+    """
+
     def __init__(self, df, data_desc=None):
         super().__init__(df)
 
@@ -19,29 +24,6 @@ class LowestSinceGenerator(GeneratorBase):
             raise Exception("data_desc is required")
 
         self._data_desc = data_desc
-
-    def generate(self):
-        count = 0
-
-        # Report countries
-        if COUNTRY in self._df.columns:
-            # Global / not US
-            countries = sorted(unique(self._df[COUNTRY]))
-            for country in countries:
-                country_df = filter_df(self._df, COUNTRY, country)
-                if self._process_series(country_df.sum()[EARLIEST:], country):
-                    count += 1
-
-        # Report states
-        state_header = STATE if STATE in self._df.columns else PROVINCE
-        state_df = self._df.groupby(state_header).sum()
-        states = sorted(state_df.index)
-
-        for state in states:
-            if self._process_series(state_df.loc[state][EARLIEST:], state):
-                count += 1
-
-        return count
 
     def _process_series(self, series, location):
         # Get daily values

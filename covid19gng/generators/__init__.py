@@ -1,2 +1,4 @@
 from covid19gng.generators.base import GeneratorBase
+from covid19gng.generators.countryandstate import CountryAndStateGenerator
 from covid19gng.generators.lowestsince import LowestSinceGenerator
+from covid19gng.generators.recoverymilestone import RecoveryMilestoneGenerator

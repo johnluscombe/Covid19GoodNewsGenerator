@@ -5,9 +5,6 @@ GeneratorBase
 Base functionlity for all good news generators.
 """
 
-# First day data was collected
-EARLIEST = "1/22/20"
-
 
 class GeneratorBase:
     """
