@@ -115,3 +115,34 @@ def input_and_validate(prompt=None, options=None, ignore=None):
         return i
 
     return options[lower_options.index(i_lower)]
+
+
+def filter_df(df, key, value):
+    """
+    Filters the given :class:`~pd.DataFrame` using the given filter key and
+    values.
+
+    Args:
+        df (:class:`~pd.DataFrame`): :class:`~pd.DataFrame` to filter.
+        key (str): Filter key.
+        values (str or list): Filter values.
+
+    Returns:
+        :class:`~pd.DataFrame`
+    """
+
+    if not value:
+        nan_df = df[key].isna()
+
+        if nan_df.sum() == 1:
+            # If a row exists in the filtered data frame where the value of
+            # the given key is NaN, it is the total row, so use that for
+            # the data
+            df = df[nan_df]
+    else:
+        if type(value) != list:
+            value = [value]
+
+        df = df[df[key].isin(value)]
+
+    return df
