@@ -19,8 +19,8 @@ class RecoveryMilestoneGenerator(CountryAndStateGenerator):
     """
 
     def _process_series(self, series, location):
-        yesterday_num_digits = len(str(series[-2]))
-        today_num_digits = len(str(series[-1]))
+        yesterday_num_digits = len(str(int(series[-2])))
+        today_num_digits = len(str(int(series[-1])))
 
         if today_num_digits > yesterday_num_digits and\
                 series[-1] > RECOVERIES_THRESHOLD:
