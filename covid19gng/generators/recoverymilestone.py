@@ -27,5 +27,8 @@ class RecoveryMilestoneGenerator(CountryAndStateGenerator):
             milestone = int(today / remainder_multiple) * remainder_multiple
 
             if today > milestone >= yesterday:
-                text = "%s passed %s recoveries (%s)"
+                text = "* **%s** \\- passed %s recoveries (%s)"
                 print(text % (location, milestone, today))
+                return True
+
+        return False

@@ -6,6 +6,10 @@ Generator for generating when a location has had the lowest amount of
 recoveries or deaths since a particular date.
 """
 
+from datetime import datetime
+
+from covid19gng.constants import DF_DATE_FORMAT
+from covid19gng.constants import REPORT_DATE_FORMAT
 from covid19gng.generators import CountryAndStateGenerator
 
 # Minimum number of days the previous date must be in order to get reported
@@ -44,7 +48,11 @@ class LowestSinceGenerator(CountryAndStateGenerator):
             i += 1
 
         if previous_date is not None:
-            text = "%s had its lowest %s since %s (%s)"
+            text = "* **%s** \\- lowest %s since %s (%s)"
+
+            previous_date = datetime.strptime(previous_date, DF_DATE_FORMAT)
+            previous_date = previous_date.strftime(REPORT_DATE_FORMAT)
+
             print(text % (location, self._data_desc, previous_date, str(int(todays_value))))
             return True
 

@@ -5,7 +5,8 @@ Constants
 Common constants throughout the app.
 """
 
-DATE_FORMAT = "%m/%d/%y"
+DF_DATE_FORMAT = "%m/%d/%y"
+REPORT_DATE_FORMAT = "%B %-d"
 
 # First day data was collected
 EARLIEST = "1/22/20"

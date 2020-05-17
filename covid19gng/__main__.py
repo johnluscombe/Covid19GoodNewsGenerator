@@ -12,7 +12,7 @@ import argparse
 from datetime import datetime
 import pandas as pd
 
-from covid19gng.constants import DATE_FORMAT
+from covid19gng.constants import DF_DATE_FORMAT
 from covid19gng.constants import COUNTRY
 from covid19gng.constants import GLOBAL
 from covid19gng.constants import US
@@ -45,9 +45,9 @@ class AppRunner:
                    self.global_recoveries_df, self.us_confirmed_df,
                    self.us_deaths_df]:
 
-            dates.append(datetime.strptime(df.columns[-1], DATE_FORMAT))
+            dates.append(datetime.strptime(df.columns[-1], DF_DATE_FORMAT))
 
-        print("Last Updated: %s\n" % max(dates).strftime(DATE_FORMAT))
+        print("Last Updated: %s" % max(dates).strftime(DF_DATE_FORMAT))
 
     def run(self):
         loop = True
@@ -70,31 +70,14 @@ class AppRunner:
 
                 loop = False
 
-            generators = []
-
-            if not country or country == US:
-                generators.extend([
-                    LowestSinceGenerator(self.us_confirmed_df, "confirmed cases"),
-                    LowestSinceGenerator(self.us_deaths_df, "deaths")
-                ])
-
             if country:
                 confirmed_df = filter_df(confirmed_df, COUNTRY, country)
                 deaths_df = filter_df(deaths_df, COUNTRY, country)
                 recoveries_df = filter_df(recoveries_df, COUNTRY, country)
 
-            generators.extend([
-                LowestSinceGenerator(confirmed_df, "confirmed cases"),
-                LowestSinceGenerator(deaths_df, "deaths"),
-                RecoveryMilestoneGenerator(recoveries_df)
-            ])
-
-            count = 0
-            for generator in generators:
-                count += generator.generate()
-
-            if count == 0:
-                print("No news to report.")
+            self._report_confirmed_cases_milestones(country, confirmed_df)
+            self._report_deaths_milestones(country, deaths_df)
+            self._report_recoveries_milestones(recoveries_df)
 
     def _prompt_for_country(self, global_df):
         """
@@ -113,6 +96,46 @@ class AppRunner:
 
         return input_and_validate(
             prompt=prompt, options=global_df[COUNTRY].tolist(), ignore=[""])
+
+    def _report_confirmed_cases_milestones(self, country, df):
+        print("\nConfirmed cases milestones:\n")
+
+        DATA_DESC = "confirmed cases"
+
+        us_news_to_report = False
+        if not country or country == US:
+            gen = LowestSinceGenerator(self.us_confirmed_df, DATA_DESC)
+            us_news_to_report = gen.generate()
+
+        gen = LowestSinceGenerator(df, DATA_DESC)
+        global_news_to_report = gen.generate()
+
+        if not us_news_to_report and not global_news_to_report:
+            print("No news to report.")
+
+    def _report_deaths_milestones(self, country, global_df):
+        print("\nDeaths milestones:\n")
+
+        DATA_DESC = "deaths"
+
+        us_news_to_report = False
+        if not country or country == US:
+            gen = LowestSinceGenerator(self.us_deaths_df, DATA_DESC)
+            us_news_to_report = gen.generate()
+
+        gen = LowestSinceGenerator(global_df, DATA_DESC)
+        global_news_to_report = gen.generate()
+
+        if not us_news_to_report and not global_news_to_report:
+            print("No news to report.")
+
+    def _report_recoveries_milestones(self, df):
+        print("\nRecoveries milestones:\n")
+
+        gen = RecoveryMilestoneGenerator(df)
+
+        if not gen.generate():
+            print("No news to report.")
 
 
 if __name__ == "__main__":
