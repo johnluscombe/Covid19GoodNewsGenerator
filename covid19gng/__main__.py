@@ -1,11 +1,13 @@
 """
-Covid19Plotter
-==============
+COVID-19 Good News Generator
+============================
 
-Module for plotting trends about the novel coronavirus in various locations.
-The data comes from John Hopkins University:
+Module for reporting good news, based on data, about the novel coronavirus in
+various locations. The data comes from John Hopkins University:
 https://github.com/CSSEGISandData/COVID-19
 """
+
+import argparse
 
 from datetime import datetime
 import pandas as pd
@@ -27,13 +29,15 @@ BASE_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/css
 
 
 class AppRunner:
-    def __init__(self):
+    def __init__(self, args):
         print("Loading...")
         self.global_confirmed_df = pd.read_csv(BASE_URL % (CONFIRMED, GLOBAL))
         self.global_deaths_df = pd.read_csv(BASE_URL % (DEATHS, GLOBAL))
         self.global_recoveries_df = pd.read_csv(BASE_URL % (RECOVERED, GLOBAL))
         self.us_confirmed_df = pd.read_csv(BASE_URL % (CONFIRMED, US))
         self.us_deaths_df = pd.read_csv(BASE_URL % (DEATHS, US))
+
+        self.args = args
 
         dates = []
 
@@ -46,13 +50,25 @@ class AppRunner:
         print("Last Updated: %s\n" % max(dates).strftime(DATE_FORMAT))
 
     def run(self):
-        while True:
+        loop = True
+
+        while loop:
             confirmed_df = self.global_confirmed_df
             deaths_df = self.global_deaths_df
             recoveries_df = self.global_recoveries_df
 
+            country = self.args.country
+
             # Prompt user for country
-            country = self._prompt_for_country(confirmed_df)
+            if country is None:
+                country = self._prompt_for_country(confirmed_df)
+            else:
+                if country.lower() == "none":
+                    # If the country flag is "none", treat it as if the user
+                    # entered nothing for the country
+                    country = ""
+
+                loop = False
 
             generators = []
 
@@ -100,5 +116,14 @@ class AppRunner:
 
 
 if __name__ == "__main__":
-    plotter = AppRunner()
+    description = "Reports good news, based on data, about the novel " \
+                  "coronavirus in various locations"
+
+    help = "Country to report good news about. Use 'None' to view good news " \
+           "about all countries."
+
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("--country", help=help)
+
+    plotter = AppRunner(parser.parse_args())
     plotter.run()
