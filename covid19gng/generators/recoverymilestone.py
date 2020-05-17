@@ -19,12 +19,13 @@ class RecoveryMilestoneGenerator(CountryAndStateGenerator):
     """
 
     def _process_series(self, series, location):
-        yesterday_num_digits = len(str(int(series[-2])))
-        today_num_digits = len(str(int(series[-1])))
+        yesterday, today = series[-2:]
+        today_num_digits = len(str(int(today)))
+        remainder_multiple = 10 ** (today_num_digits - 1)
 
-        if today_num_digits > yesterday_num_digits and\
-                series[-1] > RECOVERIES_THRESHOLD:
+        if today > RECOVERIES_THRESHOLD:
+            milestone = int(today / remainder_multiple) * remainder_multiple
 
-            milestone = "1" + ("0" * (today_num_digits - 1))
-            text = "%s passed %s recoveries (%s)"
-            print(text % (location, milestone, series[-1]))
+            if today > milestone >= yesterday:
+                text = "%s passed %s recoveries (%s)"
+                print(text % (location, milestone, today))
