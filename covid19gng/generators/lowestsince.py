@@ -48,12 +48,13 @@ class LowestSinceGenerator(CountryAndStateGenerator):
             i += 1
 
         if previous_date is not None:
-            text = "* **%s** \\- lowest %s since %s (%s)"
 
             previous_date = datetime.strptime(previous_date, DF_DATE_FORMAT)
             previous_date = previous_date.strftime(REPORT_DATE_FORMAT)
 
-            print(text % (location, self._data_desc, previous_date, str(int(todays_value))))
+            print(f"* **{location}** \\- lowest {self._data_desc} "
+                  f"since {previous_date} ({int(todays_value):,})")
+
             return True
 
         return False
