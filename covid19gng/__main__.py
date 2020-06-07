@@ -21,7 +21,6 @@ from covid19gng.constants import DEATHS
 from covid19gng.constants import RECOVERED
 from covid19gng.generators import LowestSinceGenerator
 from covid19gng.generators import RecoveryMilestoneGenerator
-from covid19gng.utils import filter_df
 from covid19gng.utils import input_and_validate
 
 BASE_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data" \
@@ -71,9 +70,9 @@ class AppRunner:
                 loop = False
 
             if country:
-                confirmed_df = filter_df(confirmed_df, COUNTRY, country)
-                deaths_df = filter_df(deaths_df, COUNTRY, country)
-                recoveries_df = filter_df(recoveries_df, COUNTRY, country)
+                confirmed_df = confirmed_df[confirmed_df[COUNTRY] == country]
+                deaths_df = deaths_df[deaths_df[COUNTRY] == country]
+                recoveries_df = recoveries_df[recoveries_df[COUNTRY] == country]
 
             self._report_confirmed_cases_milestones(country, confirmed_df)
             self._report_deaths_milestones(country, deaths_df)

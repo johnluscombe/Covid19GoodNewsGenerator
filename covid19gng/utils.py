@@ -7,6 +7,9 @@ Utilities used throughout the app.
 
 import numpy as np
 
+from covid19gng.constants import STATE
+from covid19gng.constants import PROVINCE
+
 OPTIONS = "options"
 
 DEFAULT_INPUT_ERROR = "Invalid input."
@@ -117,32 +120,22 @@ def input_and_validate(prompt=None, options=None, ignore=None):
     return options[lower_options.index(i_lower)]
 
 
-def filter_df(df, key, value):
+def get_country_sum(country_df):
     """
-    Filters the given :class:`~pd.DataFrame` using the given filter key and
-    values.
+    Gets the sum series for the given country data frame.
 
     Args:
-        df (:class:`~pd.DataFrame`): :class:`~pd.DataFrame` to filter.
-        key (str): Filter key.
-        values (str or list): Filter values.
+        country_df (:class:`~pd.DataFrame`): Data frame representing one
+            country.
 
     Returns:
-        :class:`~pd.DataFrame`
+        :class:`~pd.Series`
     """
+    
+    state_header = STATE if STATE in country_df.columns else PROVINCE
+    nan_df = country_df[state_header].isna()
 
-    if not value:
-        nan_df = df[key].isna()
+    if nan_df.sum() == 1:
+        return country_df[nan_df].iloc[0]
 
-        if nan_df.sum() == 1:
-            # If a row exists in the filtered data frame where the value of
-            # the given key is NaN, it is the total row, so use that for
-            # the data
-            df = df[nan_df]
-    else:
-        if type(value) != list:
-            value = [value]
-
-        df = df[df[key].isin(value)]
-
-    return df
+    return country_df.sum()

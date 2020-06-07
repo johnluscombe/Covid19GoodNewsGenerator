@@ -11,7 +11,7 @@ from covid19gng.constants import COUNTRY
 from covid19gng.constants import STATE
 from covid19gng.constants import PROVINCE
 from covid19gng.generators import GeneratorBase
-from covid19gng.utils import filter_df
+from covid19gng.utils import get_country_sum
 from covid19gng.utils import unique
 
 
@@ -27,10 +27,10 @@ class CountryAndStateGenerator(GeneratorBase):
         # Report countries
         if COUNTRY in self._df.columns:
             # Global / not US
-            countries = sorted(unique(self._df[COUNTRY]))
-            for country in countries:
-                country_df = filter_df(self._df, COUNTRY, country)
-                if self._process_series(country_df.sum()[EARLIEST:], country):
+            countries_df = self._df.groupby(COUNTRY).apply(get_country_sum)
+            for i in range(len(countries_df)):
+                country_df = countries_df.iloc[i]
+                if self._process_series(country_df[EARLIEST:], country_df[COUNTRY]):
                     count += 1
 
         # Report states
