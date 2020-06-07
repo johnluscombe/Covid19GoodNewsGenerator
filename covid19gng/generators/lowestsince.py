@@ -29,6 +29,17 @@ EARLIEST_FORMATTED = EARLIEST_DATE.strftime(REPORT_DATE_FORMAT)
 
 
 def process_series(series, location, data_desc):
+    """
+    Reports good news about the given location using the given
+    :class:`~pandas.Series`.
+
+    Args:
+        series (:class:`~pandas.Series`): Series to use to report good
+            news.
+        location (str): Location to report good news about.
+        data_desc (str): Description of the data being processed.
+    """
+
     todays_value = series[-1]
 
     # Take out today's value from series
@@ -83,6 +94,10 @@ def process_series(series, location, data_desc):
 class LowestSinceGenerator(CountryAndStateGenerator):
     """
     LowestSinceGenerator class. See module documentation for more information.
+
+    Args:
+        df (:class:`~pd.DataFrame`): :class:`~pd.DataFrame` to process.
+        data_desc (str): Description of the data being processed.
     """
 
     def __init__(self, df, data_desc=None):
@@ -101,6 +116,14 @@ class LowestSinceGenerator(CountryAndStateGenerator):
 
 
 class ActiveCasesLowestSinceGenerator:
+    """
+    :class:`~LowestSinceGenerator` for active cases.
+
+    Args:
+        conf_df (:class:`~pd.DataFrame`): :class:`~pd.DataFrame` for confirmed
+            cases.
+        rec_df (:class:`~pd.DataFrame`): :class:`~pd.DataFrame` for recoveries.
+    """
 
     def __init__(self, conf_df, rec_df):
         self._conf_df = conf_df
@@ -147,4 +170,14 @@ class ActiveCasesLowestSinceGenerator:
         return count
 
     def _process_series(self, series, location):
+        """
+        Reports good news about the given location using the given
+        :class:`~pandas.Series`.
+
+        Args:
+            series (:class:`~pandas.Series`): Series to use to report good
+                news.
+            location (str): Location to report good news about.
+        """
+
         return process_series(series, location, "active cases")

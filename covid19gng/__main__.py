@@ -99,6 +99,14 @@ class AppRunner:
             prompt=prompt, options=global_df[COUNTRY].tolist(), ignore=[""])
 
     def _report_confirmed_cases_milestones(self, country, df):
+        """
+        Reports all confirmed cases milestones.
+
+        Args:
+            country (str): Country to use to limit results.
+            df (:class:`~pd.DataFrame`): Confirmed cases dataframe.
+        """
+
         print("\nConfirmed cases milestones:\n")
 
         data_desc = "confirmed cases"
@@ -115,6 +123,14 @@ class AppRunner:
             print("No news to report.")
 
     def _report_active_cases_milestones(self, conf_df, rec_df):
+        """
+        Reports all active cases milestones.
+
+        Args:
+            conf_df (:class:`~pd.DataFrame`): Confirmed cases dataframe.
+            rec_df (:class:`~pd.DataFrame`): Recoveries dataframe.
+        """
+
         print("\nActive cases milestones:\n")
 
         gen = ActiveCasesLowestSinceGenerator(conf_df, rec_df)
@@ -123,6 +139,14 @@ class AppRunner:
             print("No news to report.")
 
     def _report_deaths_milestones(self, country, global_df):
+        """
+        Reports all deaths milestones.
+
+        Args:
+            country (str): Country to use to limit results.
+            df (:class:`~pd.DataFrame`): Deaths dataframe.
+        """
+
         print("\nDeaths milestones:\n")
 
         data_desc = "deaths"
@@ -139,6 +163,13 @@ class AppRunner:
             print("No news to report.")
 
     def _report_recoveries_milestones(self, df):
+        """
+        Reports all recoveries milestones.
+
+        Args:
+            df (:class:`~pd.DataFrame`): Recoveries dataframe.
+        """
+
         print("\nRecoveries milestones:\n")
 
         gen = RecoveryMilestoneGenerator(df)
