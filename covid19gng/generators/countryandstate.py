@@ -27,6 +27,7 @@ class CountryAndStateGenerator(GeneratorBase):
         if COUNTRY in self._df.columns:
             # Global / not US
             countries_df = self._df.groupby(COUNTRY).apply(get_country_sum)
+            countries_df[COUNTRY] = countries_df.index
             for i in range(len(countries_df)):
                 country_series = countries_df.iloc[i]
                 if self._process_series(country_series[EARLIEST:], country_series[COUNTRY]):
