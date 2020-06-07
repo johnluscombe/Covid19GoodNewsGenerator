@@ -20,6 +20,7 @@ from covid19gng.constants import CONFIRMED
 from covid19gng.constants import DEATHS
 from covid19gng.constants import RECOVERED
 from covid19gng.generators import LowestSinceGenerator
+from covid19gng.generators import ActiveCasesLowestSinceGenerator
 from covid19gng.generators import RecoveryMilestoneGenerator
 from covid19gng.utils import input_and_validate
 
@@ -75,6 +76,7 @@ class AppRunner:
                 recoveries_df = recoveries_df[recoveries_df[COUNTRY] == country]
 
             self._report_confirmed_cases_milestones(country, confirmed_df)
+            self._report_active_cases_milestones(confirmed_df, recoveries_df)
             self._report_deaths_milestones(country, deaths_df)
             self._report_recoveries_milestones(recoveries_df)
 
@@ -99,30 +101,38 @@ class AppRunner:
     def _report_confirmed_cases_milestones(self, country, df):
         print("\nConfirmed cases milestones:\n")
 
-        DATA_DESC = "confirmed cases"
+        data_desc = "confirmed cases"
 
         us_news_to_report = False
         if not country or country == US:
-            gen = LowestSinceGenerator(self.us_confirmed_df, DATA_DESC)
+            gen = LowestSinceGenerator(self.us_confirmed_df, data_desc)
             us_news_to_report = gen.generate()
 
-        gen = LowestSinceGenerator(df, DATA_DESC)
+        gen = LowestSinceGenerator(df, data_desc)
         global_news_to_report = gen.generate()
 
         if not us_news_to_report and not global_news_to_report:
             print("No news to report.")
 
+    def _report_active_cases_milestones(self, conf_df, rec_df):
+        print("\nActive cases milestones:\n")
+
+        gen = ActiveCasesLowestSinceGenerator(conf_df, rec_df)
+
+        if not gen.generate():
+            print("No news to report.")
+
     def _report_deaths_milestones(self, country, global_df):
         print("\nDeaths milestones:\n")
 
-        DATA_DESC = "deaths"
+        data_desc = "deaths"
 
         us_news_to_report = False
         if not country or country == US:
-            gen = LowestSinceGenerator(self.us_deaths_df, DATA_DESC)
+            gen = LowestSinceGenerator(self.us_deaths_df, data_desc)
             us_news_to_report = gen.generate()
 
-        gen = LowestSinceGenerator(global_df, DATA_DESC)
+        gen = LowestSinceGenerator(global_df, data_desc)
         global_news_to_report = gen.generate()
 
         if not us_news_to_report and not global_news_to_report:
